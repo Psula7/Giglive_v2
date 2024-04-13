@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/mainScreen">
+
+    <composable
+        android:id="@+id/mainScreen"
+        android:name="com.example.giglive_v2.MainScreen"
+        android:label="Main Screen">
+        <action
+            android:id="@+id/action_mainScreen_to_cartelScreen"
+            app:destination="@id/cartelScreen" />
+        <action
+            android:id="@+id/action_mainScreen_to_cartel2Screen"
+            app:destination="@id/cartel2Screen" />
+        <!-- Nueva acción para navegar a cartel3Screen -->
+        <action
+            android:id="@+id/action_mainScreen_to_cartel3Screen"
+            app:destination="@id/cartel3Screen" />
+    </composable>
+
+    <composable
+        android:id="@+id/cartelScreen"
+        android:name="com.example.giglive_v2.CartelScreen"
+        android:label="Cartel Screen" />
+
+    <composable
+        android:id="@+id/cartel2Screen"
+        android:name="com.example.giglive_v2.Cartel2Screen"
+        android:label="Cartel 2 Screen" />
+
+    <!-- Nuevo destino para cartel3Screen -->
+    <composable
+        android:id="@+id/cartel3Screen"
+        android:name="com.example.giglive_v2.Cartel3Screen"
+        android:label="Cartel 3 Screen" />
+
+</navigation>
+
