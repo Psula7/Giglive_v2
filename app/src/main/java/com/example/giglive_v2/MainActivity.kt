@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Giglive_v2Theme {
 
-               // CartelScreen3()
+                //CartelScreen3()
                 val navController = rememberNavController()
                 NavHost(navController, startDestination = "main") {
                     composable("main") {
@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity() {
                         CartelScreen3()
                     }
                 }
+
             }
         }
     }
@@ -248,7 +249,27 @@ fun CartelScreen3() {
     var currentAudioResId by remember { mutableStateOf<Int?>(null) }
 
     val artistAreas = listOf(
-        ClickableArea(x = 40, y = 1425, width = 165, height = 30, audioResId = R.raw.c2audio1),
+        ClickableArea(x = 40, y = 1425, width = 160, height = 25, audioResId = R.raw.c3audio1),
+        ClickableArea(x = 40, y = 1470, width = 160, height = 25, audioResId = R.raw.c3audio2),
+        ClickableArea(x = 40, y = 1512, width = 140, height = 25, audioResId = R.raw.c3audio3),
+        ClickableArea(x = 225, y = 1512, width = 342, height = 25, audioResId = R.raw.c3audio4),
+        ClickableArea(x = 40, y = 1555, width = 220, height = 25, audioResId = R.raw.c3audio5),
+        ClickableArea(x = 315, y = 1555, width = 180, height = 25, audioResId = R.raw.c3audio6),
+        ClickableArea(x = 40, y = 1597, width = 220, height = 25, audioResId = R.raw.c3audio7),
+        ClickableArea(x = 305, y = 1597, width = 160, height = 25, audioResId = R.raw.c3audio8),
+        ClickableArea(x = 40, y = 1638, width = 140, height = 25, audioResId = R.raw.c3audio9),
+        ClickableArea(x = 235, y = 1638, width = 390, height = 25, audioResId = R.raw.c3audio10),
+        ClickableArea(x = 40, y = 1683, width = 340, height = 25, audioResId = R.raw.c3audio11),
+        ClickableArea(x = 425, y = 1683, width = 145, height = 25, audioResId = R.raw.c3audio12),
+        ClickableArea(x = 40, y = 1723, width = 170, height = 25, audioResId = R.raw.c3audio13),
+        ClickableArea(x = 265, y = 1723, width = 295, height = 25, audioResId = R.raw.c3audio14),
+        ClickableArea(x = 40, y = 1764, width = 190, height = 25, audioResId = R.raw.c3audio15),
+        ClickableArea(x = 273, y = 1764, width = 140, height = 25, audioResId = R.raw.c3audio16),
+        ClickableArea(x = 40, y = 1808, width = 240, height = 25, audioResId = R.raw.c3audio17),
+        ClickableArea(x = 330, y = 1808, width = 140, height = 25, audioResId = R.raw.c3audio18),
+        ClickableArea(x = 40, y = 1851, width = 200, height = 25, audioResId = R.raw.c3audio19),
+        ClickableArea(x = 280, y = 1851, width = 195, height = 25, audioResId = R.raw.c3audio20),
+        ClickableArea(x = 40, y = 1895, width = 510, height = 25, audioResId = R.raw.c3audio21),
 
         )
 
@@ -333,12 +354,12 @@ fun EventCard(name: String, price: String, location: String, onClick: () -> Unit
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = name, style = MaterialTheme.typography.titleLarge)
+            Text(text = name, style = MaterialTheme.typography.headlineLarge)
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = "Price: $price", style = MaterialTheme.typography.bodyLarge)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Price: $price", style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "Location: $location", style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = "Location: $location", style = MaterialTheme.typography.bodyLarge)
+            Spacer(modifier = Modifier.height(20.dp))
             Button(onClick = onClick) {
                 Text(text = "Ver cartel")
             }
