@@ -5,8 +5,8 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.*
@@ -16,9 +16,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,11 +29,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.giglive_v2.ui.theme.Giglive_v2Theme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             Giglive_v2Theme {
-
                 //CartelScreen3()
                 val navController = rememberNavController()
                 NavHost(navController, startDestination = "main") {
@@ -51,11 +50,12 @@ class MainActivity : ComponentActivity() {
                         CartelScreen3()
                     }
                 }
-
             }
         }
     }
 }
+
+
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -65,18 +65,21 @@ fun MainScreen(navController: NavController) {
             name = "Boombastic",
             price = "80€",
             location = "Rivas Vaciamadrid",
+            imageResource = R.drawable.cartel,
             onClick = { navController.navigate("cartel") }
         )
         EventCard(
             name = "Instafest",
             price = "0€",
             location = "Instagram",
+            imageResource = R.drawable.cartel2,
             onClick = { navController.navigate("cartel2") }
         )
         EventCard(
             name = "La movida madrileña",
             price = "40€",
             location = "Puerta de montilla",
+            imageResource = R.drawable.cartel3,
             onClick = { navController.navigate("cartel3") }
         )
     }
@@ -274,6 +277,7 @@ fun CartelScreen3() {
         )
 
 
+
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.cartel3),
@@ -342,9 +346,51 @@ fun CartelScreen3() {
 */
     }
 }
+@Composable
+fun EventCard(
+    name: String,
+    price: String,
+    location: String,
+    imageResource: Int, // Recurso de imagen, por ejemplo: R.drawable.mi_imagen
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        Row(
+
+        ) {
+            Image(
+                painter = painterResource(id = imageResource),
+                contentDescription = null, // Opcional: en este caso no se necesita descripción
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(150.dp)
+                    .padding(8.dp)
+            )
+            Column(
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(text = name, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Price: $price", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(start = 8.dp))
+                Text(text = "Location: $location", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(start = 8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = onClick) {
+                    Text(text = "Ver cartel")
+                }
+            }
+        }
+    }
+}
 
 @Composable
-fun EventCard(name: String, price: String, location: String, onClick: () -> Unit) {
+fun EventCard1(name: String, price: String, location: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(16.dp)
@@ -366,6 +412,7 @@ fun EventCard(name: String, price: String, location: String, onClick: () -> Unit
         }
     }
 }
+
 
 data class ClickableArea(val x: Int, val y: Int, val width: Int, val height: Int, val audioResId: Int)
 
