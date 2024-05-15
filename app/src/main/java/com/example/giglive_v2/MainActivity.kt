@@ -5,6 +5,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -12,14 +13,20 @@ import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -49,6 +56,15 @@ class MainActivity : ComponentActivity() {
                     composable("cartel3") {
                         CartelScreen3()
                     }
+                    composable("cartel4") {
+                        CartelScreen4()
+                    }
+                    composable("cartel5") {
+                        CartelScreen5()
+                    }
+                    composable("cartel6") {
+                        CartelScreen6()
+                    }
                 }
             }
         }
@@ -57,31 +73,73 @@ class MainActivity : ComponentActivity() {
 
 
 
+
 @Composable
 fun MainScreen(navController: NavController) {
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         // Contenido de la pantalla principal
-        EventCard(
-            name = "Boombastic",
-            price = "80€",
-            location = "Rivas Vaciamadrid",
-            imageResource = R.drawable.cartel,
-            onClick = { navController.navigate("cartel") }
-        )
-        EventCard(
-            name = "Instafest",
-            price = "0€",
-            location = "Instagram",
-            imageResource = R.drawable.cartel2,
-            onClick = { navController.navigate("cartel2") }
-        )
-        EventCard(
-            name = "La movida madrileña",
-            price = "40€",
-            location = "Puerta de montilla",
-            imageResource = R.drawable.cartel3,
-            onClick = { navController.navigate("cartel3") }
-        )
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            item {
+                EventCard(
+                    name = "Boombastic Madrid",
+                    price = "80€",
+                    location = "Rivas Vaciamadrid",
+                    imageResource = R.drawable.cartel,
+                    onClick = { navController.navigate("cartel") }
+                )
+            }
+            item {
+                EventCard(
+                    name = "Instafest",
+                    price = "0€",
+                    location = "Instagram",
+                    imageResource = R.drawable.cartel2,
+                    onClick = { navController.navigate("cartel2") }
+                )
+            }
+            item {
+                EventCard(
+                    name = "La movida madrileña",
+                    price = "40€",
+                    location = "Puerta de montilla",
+                    imageResource = R.drawable.cartel3,
+                    onClick = { navController.navigate("cartel3") }
+                )
+            }
+            item {
+                EventCard(
+                    name = "Boombastic Asturias",
+                    price = "85€",
+                    location = "Llanera",
+                    imageResource = R.drawable.cartel4,
+                    onClick = { navController.navigate("cartel4") }
+                )
+            }
+            item {
+                EventCard(
+                    name = "Boombastic Gran Canaria",
+                    price = "105€",
+                    location = "Anexo Estadio Gran Canaria",
+                    imageResource = R.drawable.cartel5,
+                    onClick = { navController.navigate("cartel5") }
+                )
+            }
+            item {
+                EventCard(
+                    name = "Boombastic Costa del Sol",
+                    price = "78€",
+                    location = "Málaga Forum.",
+                    imageResource = R.drawable.cartel6,
+                    onClick = { navController.navigate("cartel6") }
+                )
+            }
+        }
     }
 }
 
@@ -89,70 +147,70 @@ fun MainScreen(navController: NavController) {
 fun CartelScreen() {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
-    var currentAudioResId by remember { mutableStateOf<Int?>(null) }
+    var artistaActivo by remember { mutableStateOf<Artista?>(null) }
 
-    val artistAreas = listOf(
-        ClickableArea(x = 350, y = 1045, width = 380, height = 45, audioResId = R.raw.audio1),
-        ClickableArea(x = 275, y = 1110, width = 550, height = 45, audioResId = R.raw.audio2),
-        ClickableArea(x = 210, y = 1170, width = 330, height = 45, audioResId = R.raw.audio3),
-        ClickableArea(x = 600, y = 1170, width = 290, height = 45, audioResId = R.raw.audio4),
-        ClickableArea(x = 205, y = 1225, width = 230, height = 45, audioResId = R.raw.audio5),
-        ClickableArea(x = 500, y = 1225, width = 150, height = 45, audioResId = R.raw.audio6),
-        ClickableArea(x = 720, y = 1225, width = 180, height = 45, audioResId = R.raw.audio7),
-        ClickableArea(x = 160, y = 1280, width = 200, height = 40, audioResId = R.raw.audio8),
-        ClickableArea(x = 400, y = 1280, width = 530, height = 40, audioResId = R.raw.audio9),
-        ClickableArea(x = 155, y = 1329, width = 340, height = 38, audioResId = R.raw.audio10),
-        ClickableArea(x = 535, y = 1329, width = 140, height = 38, audioResId = R.raw.audio11),
-        ClickableArea(x = 720, y = 1329, width = 220, height = 38, audioResId = R.raw.audio12),
-        ClickableArea(x = 155, y = 1378, width = 135, height = 38, audioResId = R.raw.audio13),
-        ClickableArea(x = 350, y = 1378, width = 120, height = 38, audioResId = R.raw.audio14),
-        ClickableArea(x = 525, y = 1378, width = 120, height = 38, audioResId = R.raw.audio15),
-        ClickableArea(x = 700, y = 1378, width = 225, height = 38, audioResId = R.raw.audio16),
-        ClickableArea(x = 155, y = 1428, width = 170, height = 38, audioResId = R.raw.audio17),
-        ClickableArea(x = 370, y = 1428, width = 260, height = 38, audioResId = R.raw.audio18),
-        ClickableArea(x = 675, y = 1428, width = 260, height = 38, audioResId = R.raw.audio19),
+    val artistas = listOf(
+        Artista(nombre = "BIZARRAP", audioResId = R.raw.audio1),
+        Artista(nombre = "FUNZO & BABY LOUD", audioResId = R.raw.audio2),
+        Artista(nombre = "RECYCLED J", audioResId = R.raw.audio3),
+        Artista(nombre = "DELAOSSA", audioResId = R.raw.audio4),
+        Artista(nombre = "PTAZETA", audioResId = R.raw.audio5),
+        Artista(nombre = "POLE", audioResId = R.raw.audio6),
+        Artista(nombre = "YSY A", audioResId = R.raw.audio7),
+        Artista(nombre = "ZETAZEN", audioResId = R.raw.audio8),
+        Artista(nombre = "HOKE & LOUIS AMOEBA", audioResId = R.raw.audio9),
+        Artista(nombre = "JAIME LORENTE", audioResId = R.raw.audio10),
+        Artista(nombre = "SAIKO", audioResId = R.raw.audio11),
+        Artista(nombre = "LEO RIZZI", audioResId = R.raw.audio12),
+        Artista(nombre = "NANO", audioResId = R.raw.audio13),
+        Artista(nombre = "DUDI", audioResId = R.raw.audio14),
+        Artista(nombre = "ENOL", audioResId = R.raw.audio15),
+        Artista(nombre = "MUNIC HB", audioResId = R.raw.audio16),
+        Artista(nombre = "DELGAO", audioResId = R.raw.audio17),
+        Artista(nombre = "BON CALSO", audioResId = R.raw.audio18),
+        Artista(nombre = "DANI RIBBA", audioResId = R.raw.audio19),
     )
 
-
-    Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.cartel),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
-                .pointerInput(Unit) {
-                    forEachGesture {
-                        awaitPointerEventScope {
-                            awaitFirstDown().run {
-                                val x = this.position.x
-                                val y = this.position.y
-                                artistAreas.forEach { area ->
-                                    if (x >= area.x && x <= area.x + area.width &&
-                                        y >= area.y && y <= area.y + area.height
-                                    ) {
-                                        if (area.audioResId == currentAudioResId) {
-                                            mediaPlayer?.release() // Detener el audio actual
-                                            currentAudioResId = null
-                                            mediaPlayer = null
-                                            return@run
-                                        }
-                                        mediaPlayer?.release() // Detener el audio actual
-                                        mediaPlayer = MediaPlayer.create(context, area.audioResId)
-                                        mediaPlayer?.start()
-                                        mediaPlayer?.setOnCompletionListener {
-                                            mediaPlayer?.release()
-                                            mediaPlayer = null
-                                            currentAudioResId = null
-                                        }
-                                        currentAudioResId = area.audioResId
-                                        return@forEach
-                                    }
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(artistas) { artista ->
+                val isPlaying = artista == artistaActivo
+                val textStyle = if (isPlaying) {
+                    MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline,  fontWeight = FontWeight.Bold, color = Color.Magenta)
+                } else {
+                    MaterialTheme.typography.bodyMedium
+                }
+                Text(
+                    text = artista.nombre,
+                    style = textStyle,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            if (isPlaying) {
+                                mediaPlayer?.release() // Detener la música si está sonando
+                                mediaPlayer = null
+                                artistaActivo = null
+                            } else {
+                                mediaPlayer?.release() // Detener el audio actual si hay uno reproduciendo
+                                mediaPlayer = MediaPlayer.create(context, artista.audioResId)
+                                mediaPlayer?.start()
+                                mediaPlayer?.setOnCompletionListener {
+                                    mediaPlayer?.release()
+                                    mediaPlayer = null
+                                    artistaActivo = null
                                 }
+                                artistaActivo = artista
                             }
                         }
-                    }
-                }
-        )
+                )
+            }
+        }
     }
 }
 
@@ -160,192 +218,335 @@ fun CartelScreen() {
 fun CartelScreen2() {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
-    var currentAudioResId by remember { mutableStateOf<Int?>(null) }
+    var artistaActivo by remember { mutableStateOf<Artista?>(null) }
 
-    val artistAreas = listOf(
-        ClickableArea(x = 420, y = 725, width = 240, height = 50, audioResId = R.raw.c2audio1),
-        ClickableArea(x = 200, y = 800, width = 290, height = 30, audioResId = R.raw.c2audio2),
-        ClickableArea(x = 520, y = 800, width = 210, height = 30, audioResId = R.raw.c2audio3),
-        ClickableArea(x = 760, y = 800, width = 120, height = 30, audioResId = R.raw.c2audio4),
-        ClickableArea(x = 210, y = 848, width = 96, height = 28, audioResId = R.raw.c2audio5),
-        ClickableArea(x = 330, y = 848, width = 190, height = 28, audioResId = R.raw.c2audio6),
-        ClickableArea(x = 550, y = 848, width = 210, height = 28, audioResId = R.raw.c2audio7),
-        ClickableArea(x = 795, y = 848, width = 70, height = 28, audioResId = R.raw.c2audio8),
-        ClickableArea(x = 325, y = 885, width = 155, height = 28, audioResId = R.raw.c2audio9),
-        ClickableArea(x = 510, y = 885, width = 50, height = 28, audioResId = R.raw.c2audio10),
-        ClickableArea(x = 585, y = 885, width = 170, height = 28, audioResId = R.raw.c2audio11),
+    val artistas = listOf(
+        Artista(nombre = "AITANA", audioResId = R.raw.c2audio1),
+        Artista(nombre = "MARTIN URRUTIA", audioResId = R.raw.c2audio2),
+        Artista(nombre = "BAD BUNNY", audioResId = R.raw.c2audio3),
+        Artista(nombre = "DENNA", audioResId = R.raw.c2audio4),
+        Artista(nombre = "NAIARA", audioResId = R.raw.c2audio5),
+        Artista(nombre = "LUCAS CUROTTO", audioResId = R.raw.c2audio6),
+        Artista(nombre = "RAUW ALEJANDRO", audioResId = R.raw.c2audio7),
+        Artista(nombre = "ADELE", audioResId = R.raw.c2audio8),
+        Artista(nombre = "DELLAFUENTE", audioResId = R.raw.c2audio9),
+        Artista(nombre = "TINI", audioResId = R.raw.c2audio10),
+        Artista(nombre = "MYKE TOWERS", audioResId = R.raw.c2audio11),
 
-        ClickableArea(x = 310, y = 950, width = 460, height = 60, audioResId = R.raw.c2audio12),
-        ClickableArea(x = 185, y = 1030, width = 435, height = 30, audioResId = R.raw.c2audio13),
-        ClickableArea(x = 665, y = 1030, width = 230, height = 30, audioResId = R.raw.c2audio14),
-        ClickableArea(x = 180, y = 1075, width = 200, height = 28, audioResId = R.raw.c2audio15),
-        ClickableArea(x = 400, y = 1075, width = 165, height = 28, audioResId = R.raw.c2audio16),
-        ClickableArea(x = 595, y = 1075, width = 110, height = 28, audioResId = R.raw.c2audio17),
-        ClickableArea(x = 735, y = 1075, width = 75, height = 28, audioResId = R.raw.c2audio18),
-        ClickableArea(x = 840, y = 1075, width = 60, height = 28, audioResId = R.raw.c2audio19),
-        ClickableArea(x = 255, y = 1113, width = 200, height = 28, audioResId = R.raw.c2audio20),
-        ClickableArea(x = 485, y = 1113, width = 120, height = 28, audioResId = R.raw.c2audio21),
-        ClickableArea(x = 635, y = 1113, width = 190, height = 28, audioResId = R.raw.c2audio22),
+        Artista(nombre = "CHIARA OLIVER", audioResId = R.raw.c2audio12),
+        Artista(nombre = "OPERACIÓN TRIUNFO 2023", audioResId = R.raw.c2audio13),
+        Artista(nombre = "JUANJO BONA", audioResId = R.raw.c2audio14),
+        Artista(nombre = "BEA FERNÁNDEZ", audioResId = R.raw.c2audio15),
+        Artista(nombre = "TAYLOR SWIFT", audioResId = R.raw.c2audio16),
+        Artista(nombre = "QUEVEDO", audioResId = R.raw.c2audio17),
+        Artista(nombre = "OZUNA", audioResId = R.raw.c2audio18),
+        Artista(nombre = "DUKI", audioResId = R.raw.c2audio19),
+        Artista(nombre="ELADIO CARRION", audioResId = R.raw.c2audio20),
+        Artista(nombre="COLDPLAY", audioResId = R.raw.c2audio21),
+        Artista(nombre="SHAWN MENDES", audioResId = R.raw.c2audio22),
 
-        ClickableArea(x = 400, y = 1180, width = 280, height = 60, audioResId = R.raw.c2audio23),
-        ClickableArea(x = 220, y = 1255, width = 170, height = 30, audioResId = R.raw.c2audio24),
-        ClickableArea(x = 430, y = 1255, width = 230, height = 30, audioResId = R.raw.c2audio25),
-        ClickableArea(x = 700, y = 1255, width = 160, height = 30, audioResId = R.raw.c2audio26),
-        ClickableArea(x = 140, y = 1300, width = 185, height = 28, audioResId = R.raw.c2audio27),
-        ClickableArea(x = 355, y = 1300, width = 65, height = 28, audioResId = R.raw.c2audio28),
-        ClickableArea(x = 450, y = 1300, width = 185, height = 28, audioResId = R.raw.c2audio29),
-        ClickableArea(x = 660, y = 1300, width = 110, height = 28, audioResId = R.raw.c2audio30),
-        ClickableArea(x = 800, y = 1300, width = 140, height = 28, audioResId = R.raw.c2audio31),
-        ClickableArea(x = 420, y = 1337, width = 110, height = 28, audioResId = R.raw.c2audio32),
-        ClickableArea(x = 555, y = 1337, width = 110, height = 28, audioResId = R.raw.c2audio33),
+        Artista(nombre="RUSLANA", audioResId = R.raw.c2audio23),
+        Artista(nombre="PAUL THIN", audioResId = R.raw.c2audio24),
+        Artista(nombre="ÁLVARO MAYO", audioResId = R.raw.c2audio25),
+        Artista(nombre="ANUEL AA", audioResId = R.raw.c2audio26),
+        Artista(nombre="VIOLETA HÓDAR", audioResId = R.raw.c2audio27),
+        Artista(nombre="MORA", audioResId = R.raw.c2audio28),
+        Artista(nombre="BRYENT MYERS", audioResId = R.raw.c2audio29),
+        Artista(nombre="BAD GYAL", audioResId = R.raw.c2audio30),
+        Artista(nombre="NIO GARCÍA", audioResId = R.raw.c2audio31),
+        Artista(nombre="RIHANNA", audioResId = R.raw.c2audio32),
+        Artista(nombre="MELENDI", audioResId = R.raw.c2audio33),
+    )
 
-
-        )
-
-
-    Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.cartel2),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
-                .pointerInput(Unit) {
-                    forEachGesture {
-                        awaitPointerEventScope {
-                            awaitFirstDown().run {
-                                val x = this.position.x
-                                val y = this.position.y
-                                artistAreas.forEach { area ->
-                                    if (x >= area.x && x <= area.x + area.width &&
-                                        y >= area.y && y <= area.y + area.height
-                                    ) {
-                                        if (area.audioResId == currentAudioResId) {
-                                            mediaPlayer?.release() // Detener el audio actual
-                                            currentAudioResId = null
-                                            mediaPlayer = null
-                                            return@run
-                                        }
-                                        mediaPlayer?.release() // Detener el audio actual
-                                        mediaPlayer = MediaPlayer.create(context, area.audioResId)
-                                        mediaPlayer?.start()
-                                        mediaPlayer?.setOnCompletionListener {
-                                            mediaPlayer?.release()
-                                            mediaPlayer = null
-                                            currentAudioResId = null
-                                        }
-                                        currentAudioResId = area.audioResId
-                                        return@forEach
-                                    }
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(artistas) { artista ->
+                val isPlaying = artista == artistaActivo
+                val textStyle = if (isPlaying) {
+                    MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Bold, color = Color.Magenta)
+                } else {
+                    MaterialTheme.typography.bodyMedium
+                }
+                Text(
+                    text = artista.nombre,
+                    style = textStyle,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            if (isPlaying) {
+                                mediaPlayer?.release() // Detener la música si está sonando
+                                mediaPlayer = null
+                                artistaActivo = null
+                            } else {
+                                mediaPlayer?.release() // Detener el audio actual si hay uno reproduciendo
+                                mediaPlayer = MediaPlayer.create(context, artista.audioResId)
+                                mediaPlayer?.start()
+                                mediaPlayer?.setOnCompletionListener {
+                                    mediaPlayer?.release()
+                                    mediaPlayer = null
+                                    artistaActivo = null
                                 }
+                                artistaActivo = artista
                             }
                         }
-                    }
-                }
-        )
-
+                )
+            }
+        }
     }
 }
+
 @Composable
 fun CartelScreen3() {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
-    var currentAudioResId by remember { mutableStateOf<Int?>(null) }
+    var artistaActivo by remember { mutableStateOf<Artista?>(null) }
 
-    val artistAreas = listOf(
-        ClickableArea(x = 40, y = 1425, width = 160, height = 25, audioResId = R.raw.c3audio1),
-        ClickableArea(x = 40, y = 1470, width = 160, height = 25, audioResId = R.raw.c3audio2),
-        ClickableArea(x = 40, y = 1512, width = 140, height = 25, audioResId = R.raw.c3audio3),
-        ClickableArea(x = 225, y = 1512, width = 342, height = 25, audioResId = R.raw.c3audio4),
-        ClickableArea(x = 40, y = 1555, width = 220, height = 25, audioResId = R.raw.c3audio5),
-        ClickableArea(x = 315, y = 1555, width = 180, height = 25, audioResId = R.raw.c3audio6),
-        ClickableArea(x = 40, y = 1597, width = 220, height = 25, audioResId = R.raw.c3audio7),
-        ClickableArea(x = 305, y = 1597, width = 160, height = 25, audioResId = R.raw.c3audio8),
-        ClickableArea(x = 40, y = 1638, width = 140, height = 25, audioResId = R.raw.c3audio9),
-        ClickableArea(x = 235, y = 1638, width = 390, height = 25, audioResId = R.raw.c3audio10),
-        ClickableArea(x = 40, y = 1683, width = 340, height = 25, audioResId = R.raw.c3audio11),
-        ClickableArea(x = 425, y = 1683, width = 145, height = 25, audioResId = R.raw.c3audio12),
-        ClickableArea(x = 40, y = 1723, width = 170, height = 25, audioResId = R.raw.c3audio13),
-        ClickableArea(x = 265, y = 1723, width = 295, height = 25, audioResId = R.raw.c3audio14),
-        ClickableArea(x = 40, y = 1764, width = 190, height = 25, audioResId = R.raw.c3audio15),
-        ClickableArea(x = 273, y = 1764, width = 140, height = 25, audioResId = R.raw.c3audio16),
-        ClickableArea(x = 40, y = 1808, width = 240, height = 25, audioResId = R.raw.c3audio17),
-        ClickableArea(x = 330, y = 1808, width = 140, height = 25, audioResId = R.raw.c3audio18),
-        ClickableArea(x = 40, y = 1851, width = 200, height = 25, audioResId = R.raw.c3audio19),
-        ClickableArea(x = 280, y = 1851, width = 195, height = 25, audioResId = R.raw.c3audio20),
-        ClickableArea(x = 40, y = 1895, width = 510, height = 25, audioResId = R.raw.c3audio21),
+    val artistas = listOf(
+        Artista(nombre = "PISTONES", audioResId = R.raw.c3audio1),
+        Artista(nombre = "LA UNIÓN", audioResId = R.raw.c3audio2),
+        Artista(nombre = "MECANO", audioResId = R.raw.c3audio3),
+        Artista(nombre = "ALASKA Y DINARAMA", audioResId = R.raw.c3audio4),
+        Artista(nombre = "LA FRONTERA", audioResId = R.raw.c3audio5),
+        Artista(nombre = "COMPLICES", audioResId = R.raw.c3audio6),
+        Artista(nombre = "DUNCAN CHU", audioResId = R.raw.c3audio7),
+        Artista(nombre = "CADILLAC", audioResId = R.raw.c3audio8),
+        Artista(nombre = "ZOMBIES", audioResId = R.raw.c3audio9),
+        Artista(nombre = "ORQUESTA MONDRAGON", audioResId = R.raw.c3audio10),
+        Artista(nombre = "RUBI Y LOS CASINOS", audioResId = R.raw.c3audio11),
+        Artista(nombre = "LA MODE", audioResId = R.raw.c3audio12),
+        Artista(nombre = "LUZ CASAL", audioResId = R.raw.c3audio13),
+        Artista(nombre = "PEOR IMPOSSIBLE", audioResId = R.raw.c3audio14),
+        Artista(nombre = "NACHA POP", audioResId = R.raw.c3audio15),
+        Artista(nombre = "TEQUILA", audioResId = R.raw.c3audio16),
+        Artista(nombre = "LOS REBELDES", audioResId = R.raw.c3audio17),
+        Artista(nombre = "OLE OLE", audioResId = R.raw.c3audio18),
+        Artista(nombre = "HOMBRES G", audioResId = R.raw.c3audio19),
+        Artista(nombre = "TINO CASAL", audioResId = R.raw.c3audio20),
+        Artista(nombre = "LOQUILLO Y LOS TROGLODITAS", audioResId = R.raw.c3audio21),
+    )
 
-        )
-
-
-
-    Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.cartel3),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
-                .pointerInput(Unit) {
-                    forEachGesture {
-                        awaitPointerEventScope {
-                            awaitFirstDown().run {
-                                val x = this.position.x
-                                val y = this.position.y
-                                artistAreas.forEach { area ->
-                                    if (x >= area.x && x <= area.x + area.width &&
-                                        y >= area.y && y <= area.y + area.height
-                                    ) {
-                                        if (area.audioResId == currentAudioResId) {
-                                            mediaPlayer?.release() // Detener el audio actual
-                                            currentAudioResId = null
-                                            mediaPlayer = null
-                                            return@run
-                                        }
-                                        mediaPlayer?.release() // Detener el audio actual
-                                        mediaPlayer = MediaPlayer.create(context, area.audioResId)
-                                        mediaPlayer?.start()
-                                        mediaPlayer?.setOnCompletionListener {
-                                            mediaPlayer?.release()
-                                            mediaPlayer = null
-                                            currentAudioResId = null
-                                        }
-                                        currentAudioResId = area.audioResId
-                                        return@forEach
-                                    }
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(artistas) { artista ->
+                val isPlaying = artista == artistaActivo
+                val textStyle = if (isPlaying) {
+                    MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline,  fontWeight = FontWeight.Bold, color = Color.Magenta)
+                } else {
+                    MaterialTheme.typography.bodyMedium
+                }
+                Text(
+                    text = artista.nombre,
+                    style = textStyle,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            if (isPlaying) {
+                                mediaPlayer?.release() // Detener la música si está sonando
+                                mediaPlayer = null
+                                artistaActivo = null
+                            } else {
+                                mediaPlayer?.release() // Detener el audio actual si hay uno reproduciendo
+                                mediaPlayer = MediaPlayer.create(context, artista.audioResId)
+                                mediaPlayer?.start()
+                                mediaPlayer?.setOnCompletionListener {
+                                    mediaPlayer?.release()
+                                    mediaPlayer = null
+                                    artistaActivo = null
                                 }
+                                artistaActivo = artista
                             }
                         }
-                    }
-                }
-        )
-/*
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    artistAreas.forEach { area ->
-                        drawCircle(
-                            color = Color.Blue,
-                            center = Offset(area.x.toFloat(), area.y.toFloat()),
-                            radius = 8f
-                        )
-                        drawCircle(
-                            color = Color.Blue,
-                            center = Offset((area.x + area.width).toFloat(), area.y.toFloat()),
-                            radius = 8f
-                        )
-                        drawCircle(
-                            color = Color.Blue,
-                            center = Offset((area.x + area.width).toFloat(), (area.y + area.height).toFloat()),
-                            radius = 8f
-                        )
-                        drawCircle(
-                            color = Color.Blue,
-                            center = Offset(area.x.toFloat(), (area.y + area.height).toFloat()),
-                            radius = 8f
-                        )
-                    }
-                }
-
-*/
+                )
+            }
+        }
     }
 }
+
+
+@Composable
+fun CartelScreen4() {
+    val context = LocalContext.current
+    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+    var artistaActivo by remember { mutableStateOf<Artista?>(null) }
+
+    val artistas = listOf(
+        Artista(nombre = "LOLA ÍNDIGO", audioResId = R.raw.c4audio1),
+        Artista(nombre = "NATOS Y WAOR", audioResId = R.raw.c4audio2),
+        Artista(nombre = "RELS B", audioResId = R.raw.c4audio3),
+        Artista(nombre = "SAIKO", audioResId = R.raw.audio11),
+        Artista(nombre = "YANDEL", audioResId = R.raw.c4audio5),
+    )
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.cartel4),
+            contentDescription = null,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(artistas) { artista ->
+                val isPlaying = artista == artistaActivo
+                val textStyle = if (isPlaying) {
+                    MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline,  fontWeight = FontWeight.Bold, color = Color.Magenta)
+                } else {
+                    MaterialTheme.typography.bodyMedium
+                }
+                Text(
+                    text = artista.nombre,
+                    style = textStyle,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            if (isPlaying) {
+                                mediaPlayer?.release() // Detener la música si está sonando
+                                mediaPlayer = null
+                                artistaActivo = null
+                            } else {
+                                mediaPlayer?.release() // Detener el audio actual si hay uno reproduciendo
+                                mediaPlayer = MediaPlayer.create(context, artista.audioResId)
+                                mediaPlayer?.start()
+                                mediaPlayer?.setOnCompletionListener {
+                                    mediaPlayer?.release()
+                                    mediaPlayer = null
+                                    artistaActivo = null
+                                }
+                                artistaActivo = artista
+                            }
+                        }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CartelScreen5() {
+    val context = LocalContext.current
+    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+    var artistaActivo by remember { mutableStateOf<Artista?>(null) }
+
+    val artistas = listOf(
+        Artista(nombre = "LOLA ÍNDIGO", audioResId = R.raw.c4audio1),
+        Artista(nombre = "NICKI NICOLE", audioResId = R.raw.c5audio2),
+        Artista(nombre = "RELS B", audioResId = R.raw.c4audio3),
+        Artista(nombre = "YANDEL", audioResId = R.raw.c4audio5),
+    )
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.cartel5),
+            contentDescription = null,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(artistas) { artista ->
+                val isPlaying = artista == artistaActivo
+                val textStyle = if (isPlaying) {
+                    MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline,  fontWeight = FontWeight.Bold, color = Color.Magenta)
+                } else {
+                    MaterialTheme.typography.bodyMedium
+                }
+                Text(
+                    text = artista.nombre,
+                    style = textStyle,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            if (isPlaying) {
+                                mediaPlayer?.release() // Detener la música si está sonando
+                                mediaPlayer = null
+                                artistaActivo = null
+                            } else {
+                                mediaPlayer?.release() // Detener el audio actual si hay uno reproduciendo
+                                mediaPlayer = MediaPlayer.create(context, artista.audioResId)
+                                mediaPlayer?.start()
+                                mediaPlayer?.setOnCompletionListener {
+                                    mediaPlayer?.release()
+                                    mediaPlayer = null
+                                    artistaActivo = null
+                                }
+                                artistaActivo = artista
+                            }
+                        }
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun CartelScreen6() {
+    val context = LocalContext.current
+    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+    var artistaActivo by remember { mutableStateOf<Artista?>(null) }
+
+    val artistas = listOf(
+        Artista(nombre = "DUKI", audioResId = R.raw.c2audio19),
+        Artista(nombre = "BIZARRAP", audioResId = R.raw.audio1),
+        Artista(nombre = "FUNZO & BABY LOUD", audioResId = R.raw.audio2),
+        Artista(nombre = "QUEVEDO", audioResId = R.raw.c2audio17),
+        Artista(nombre = "POLE HENS", audioResId = R.raw.c6audio5),
+        Artista(nombre = "DUDI", audioResId = R.raw.audio14),
+    )
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.cartel6),
+            contentDescription = null,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(artistas) { artista ->
+                val isPlaying = artista == artistaActivo
+                val textStyle = if (isPlaying) {
+                    MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline,  fontWeight = FontWeight.Bold, color = Color.Magenta)
+                } else {
+                    MaterialTheme.typography.bodyMedium
+                }
+                Text(
+                    text = artista.nombre,
+                    style = textStyle,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            if (isPlaying) {
+                                mediaPlayer?.release() // Detener la música si está sonando
+                                mediaPlayer = null
+                                artistaActivo = null
+                            } else {
+                                mediaPlayer?.release() // Detener el audio actual si hay uno reproduciendo
+                                mediaPlayer = MediaPlayer.create(context, artista.audioResId)
+                                mediaPlayer?.start()
+                                mediaPlayer?.setOnCompletionListener {
+                                    mediaPlayer?.release()
+                                    mediaPlayer = null
+                                    artistaActivo = null
+                                }
+                                artistaActivo = artista
+                            }
+                        }
+                )
+            }
+        }
+    }
+}
+
 @Composable
 fun EventCard(
     name: String,
@@ -414,8 +615,9 @@ fun EventCard1(name: String, price: String, location: String, onClick: () -> Uni
 }
 
 
-data class ClickableArea(val x: Int, val y: Int, val width: Int, val height: Int, val audioResId: Int)
+data class Artista(val nombre: String, val audioResId: Int)
 
+data class ClickableArea(val x: Int, val y: Int, val width: Int, val height: Int, val audioResId: Int)
 @Preview(showBackground = true)
 @Composable
 fun PreviewMainScreen() {
