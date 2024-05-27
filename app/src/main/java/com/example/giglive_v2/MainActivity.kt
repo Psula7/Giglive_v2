@@ -492,6 +492,8 @@ fun CartelScreen4() {
     }
 }
 
+
+
 @Composable
 fun CartelScreen5() {
     val context = LocalContext.current
@@ -502,6 +504,7 @@ fun CartelScreen5() {
             mediaPlayer?.release() // Detener la reproducción al salir de la pantalla
         }
     }
+
     val artistas = listOf(
         Artista(nombre = "LOLA ÍNDIGO", audioResId = R.raw.c4audio1),
         Artista(nombre = "NICKI NICOLE", audioResId = R.raw.c5audio2),
@@ -509,12 +512,10 @@ fun CartelScreen5() {
         Artista(nombre = "YANDEL", audioResId = R.raw.c4audio5),
     )
 
-
     Column(
         modifier = Modifier.fillMaxSize()
-            // Permitir el desplazamiento vertical
-
-    ) {Image(
+    ) {
+        Image(
             painter = painterResource(id = R.drawable.cartel5),
             contentDescription = null,
             modifier = Modifier.fillMaxWidth()
@@ -524,7 +525,7 @@ fun CartelScreen5() {
             items(artistas) { artista ->
                 val isPlaying = artista == artistaActivo
                 val textStyle = if (isPlaying) {
-                    MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline,  fontWeight = FontWeight.Bold, color = Color.Magenta)
+                    MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Bold, color = Color.Magenta)
                 } else {
                     MaterialTheme.typography.bodyMedium
                 }
@@ -555,7 +556,6 @@ fun CartelScreen5() {
         }
     }
 }
-
 
 
 @Composable
