@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -188,7 +189,7 @@ fun CartelScreen() {
                 }
                 Text(
                     text = artista.nombre,
-                    style = textStyle,
+                    style = textStyle.copy(fontSize = 20.sp),
                     modifier = Modifier
                         .padding(8.dp)
                         .clickable {
@@ -275,7 +276,7 @@ fun CartelScreen2() {
                 }
                 Text(
                     text = artista.nombre,
-                    style = textStyle,
+                    style = textStyle.copy(fontSize = 20.sp),
                     modifier = Modifier
                         .padding(8.dp)
                         .clickable {
@@ -348,7 +349,7 @@ fun CartelScreen3() {
                 }
                 Text(
                     text = artista.nombre,
-                    style = textStyle,
+                    style = textStyle.copy(fontSize = 20.sp),
                     modifier = Modifier
                         .padding(8.dp)
                         .clickable {
@@ -406,7 +407,7 @@ fun CartelScreen4() {
                 }
                 Text(
                     text = artista.nombre,
-                    style = textStyle,
+                    style = textStyle.copy(fontSize = 20.sp),
                     modifier = Modifier
                         .padding(8.dp)
                         .clickable {
@@ -462,7 +463,7 @@ fun CartelScreen5() {
                 }
                 Text(
                     text = artista.nombre,
-                    style = textStyle,
+                    style = textStyle.copy(fontSize = 20.sp),
                     modifier = Modifier
                         .padding(8.dp)
                         .clickable {
@@ -521,7 +522,7 @@ fun CartelScreen6() {
                 }
                 Text(
                     text = artista.nombre,
-                    style = textStyle,
+                    style = textStyle.copy(fontSize = 20.sp),
                     modifier = Modifier
                         .padding(8.dp)
                         .clickable {
@@ -558,7 +559,8 @@ fun EventCard(
     Card(
         modifier = Modifier
             .padding(16.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         shape = MaterialTheme.shapes.medium,
     ) {
         Row(
