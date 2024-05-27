@@ -24,9 +24,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.giglive_v2.ui.theme.Giglive_v2Theme
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -38,34 +40,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Giglive_v2Theme {
-                //CartelScreen3()
                 val navController = rememberNavController()
                 NavHost(navController, startDestination = "main") {
                     composable("main") {
                         MainScreen(navController)
                     }
-                    composable("cartel") {
-                        CartelScreen(navController)
+                    composable(
+                        "cartel/{index}",
+                        arguments = listOf(navArgument("index") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val index = backStackEntry.arguments?.getInt("index")
+                        if (index != null) {
+                            CartelScreen(index)
+                        } else {
+                            // Manejar el caso donde el índice es nulo
+                        }
                     }
-                    /*
-                    composable("cartel") {
-                        CartelScreen1(navController)
-                    }
-                    composable("cartel2") {
-                        CartelScreen(navController)
-                    }
-                    composable("cartel3") {
-                        CartelScreen(navController)
-                    }
-                    composable("cartel4") {
-                        CartelScreen(navController)
-                    }
-                    composable("cartel5") {
-                        CartelScreen(navController)
-                    }
-                    composable("cartel6") {
-                        CartelScreen(navController)
-                    }*/
+
                 }
             }
         }
@@ -91,7 +82,8 @@ fun MainScreen(navController: NavController) {
                     price = "80€",
                     location = "Rivas Vaciamadrid",
                     imageResource = R.drawable.cartel,
-                    onClick = { navController.navigate("cartel?index=0") }
+                    onClick = { navController.navigate("cartel/0") }
+
                 )
             }
             item {
@@ -100,7 +92,7 @@ fun MainScreen(navController: NavController) {
                     price = "0€",
                     location = "Instagram",
                     imageResource = R.drawable.cartel2,
-                    onClick = { navController.navigate("cartel?index=1") }
+                    onClick = { navController.navigate("cartel/1") }
                 )
             }
             item {
@@ -109,7 +101,7 @@ fun MainScreen(navController: NavController) {
                     price = "40€",
                     location = "Puerta de montilla",
                     imageResource = R.drawable.cartel3,
-                    onClick = { navController.navigate("cartel?index=2") }
+                    onClick = { navController.navigate("cartel/2") }
                 )
             }
             item {
@@ -118,7 +110,7 @@ fun MainScreen(navController: NavController) {
                     price = "85€",
                     location = "Llanera",
                     imageResource = R.drawable.cartel4,
-                    onClick = { navController.navigate("cartel?index=3") }
+                    onClick = { navController.navigate("cartel/3") }
                 )
             }
             item {
@@ -127,7 +119,7 @@ fun MainScreen(navController: NavController) {
                     price = "105€",
                     location = "Anexo Estadio Gran Canaria",
                     imageResource = R.drawable.cartel5,
-                    onClick = { navController.navigate("cartel?index=4") }
+                    onClick = { navController.navigate("cartel/4") }
                 )
             }
             item {
@@ -136,7 +128,7 @@ fun MainScreen(navController: NavController) {
                     price = "78€",
                     location = "Málaga Forum.",
                     imageResource = R.drawable.cartel6,
-                    onClick = { navController.navigate("cartel?index=5") }
+                    onClick = { navController.navigate("cartel/5") }
                 )
             }
         }
@@ -145,90 +137,55 @@ fun MainScreen(navController: NavController) {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun CartelScreen(navController: NavController) {
+fun CartelScreen(index: Int) {
     val pagerState = rememberPagerState()
-    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(pagerState) {
+        pagerState.scrollToPage(index)
+    }
 
     HorizontalPager(
         count = 6, // Número de carteles
         state = pagerState,
         modifier = Modifier.fillMaxSize()
     ) { page ->
-        when (page) {
-            0 -> CartelScreen1(navController)
-            1 -> CartelScreen2(navController)
-            2 -> CartelScreen3(navController)
-            3 -> CartelScreen4(navController)
-            4 -> CartelScreen5(navController)
-            5 -> CartelScreen6(navController)
-        }
-    }
-}
-
-@Composable
-fun CartelContent(navController: NavController, imageResId: Int, audioRange: IntRange) {
-    val context = LocalContext.current
-    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
-    var artistaActivo by remember { mutableStateOf<Artista?>(null) }
-
-    val artistas = audioRange.map { audioResId ->
-        Artista(nombre = "Artista $audioResId", audioResId = audioResId)
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Image(
-            painter = painterResource(id = imageResId),
-            contentDescription = null,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(artistas) { artista ->
-                val isPlaying = artista == artistaActivo
-                val textStyle = if (isPlaying) {
-                    MaterialTheme.typography.bodyMedium.copy(
-                        textDecoration = TextDecoration.Underline,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Magenta
-                    )
-                } else {
-                    MaterialTheme.typography.bodyMedium
+        val cartelIndex =  page
+        when {
+            cartelIndex < 0 -> {
+                // Bloqueamos el movimiento hacia atrás si ya estamos en el primer cartel
+                CartelScreen1()
+            }
+            cartelIndex >= 6 -> {
+                // Bloqueamos el movimiento hacia adelante si ya estamos en el último cartel
+                CartelScreen6()
+            }
+            else -> {
+                // Permitimos la navegación normal si estamos dentro del rango
+                when (cartelIndex) {
+                    0 -> CartelScreen1()
+                    1 -> CartelScreen2()
+                    2 -> CartelScreen3()
+                    3 -> CartelScreen4()
+                    4 -> CartelScreen5()
+                    5 -> CartelScreen6()
+                    else -> error("Índice de pantalla de cartel fuera de rango")
                 }
-                Text(
-                    text = artista.nombre,
-                    style = textStyle.copy(fontSize = 20.sp),
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .clickable {
-                            if (isPlaying) {
-                                mediaPlayer?.release() // Detener la música si está sonando
-                                mediaPlayer = null
-                                artistaActivo = null
-                            } else {
-                                mediaPlayer?.release() // Detener el audio actual si hay uno reproduciendo
-                                mediaPlayer = MediaPlayer.create(context, artista.audioResId)
-                                mediaPlayer?.start()
-                                mediaPlayer?.setOnCompletionListener {
-                                    mediaPlayer?.release()
-                                    mediaPlayer = null
-                                    artistaActivo = null
-                                }
-                                artistaActivo = artista
-                            }
-                        }
-                )
             }
         }
     }
 }
+
+
 @Composable
-fun CartelScreen1(navController: NavController) {
+fun CartelScreen1() {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
-
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.release() // Detener la reproducción al salir de la pantalla
+        }
+    }
     val artistas = listOf(
         Artista(nombre = "BIZARRAP", audioResId = R.raw.audio1),
         Artista(nombre = "FUNZO & BABY LOUD", audioResId = R.raw.audio2),
@@ -250,8 +207,6 @@ fun CartelScreen1(navController: NavController) {
         Artista(nombre = "BON CALSO", audioResId = R.raw.audio18),
         Artista(nombre = "DANI RIBBA", audioResId = R.raw.audio19),
     )
-
-    var offsetX by remember { mutableStateOf(0f) }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -299,11 +254,15 @@ fun CartelScreen1(navController: NavController) {
 }
 
 @Composable
-fun CartelScreen2(navController: NavController) {
+fun CartelScreen2() {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
-
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.release() // Detener la reproducción al salir de la pantalla
+        }
+    }
     val artistas = listOf(
         Artista(nombre = "AITANA", audioResId = R.raw.c2audio1),
         Artista(nombre = "MARTIN URRUTIA", audioResId = R.raw.c2audio2),
@@ -390,11 +349,15 @@ fun CartelScreen2(navController: NavController) {
 }
 
 @Composable
-fun CartelScreen3(navController: NavController) {
+fun CartelScreen3() {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
-
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.release() // Detener la reproducción al salir de la pantalla
+        }
+    }
     val artistas = listOf(
         Artista(nombre = "PISTONES", audioResId = R.raw.c3audio1),
         Artista(nombre = "LA UNIÓN", audioResId = R.raw.c3audio2),
@@ -466,11 +429,15 @@ fun CartelScreen3(navController: NavController) {
 
 
 @Composable
-fun CartelScreen4(navController: NavController) {
+fun CartelScreen4() {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
-
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.release() // Detener la reproducción al salir de la pantalla
+        }
+    }
     val artistas = listOf(
         Artista(nombre = "LOLA ÍNDIGO", audioResId = R.raw.c4audio1),
         Artista(nombre = "NATOS Y WAOR", audioResId = R.raw.c4audio2),
@@ -526,11 +493,15 @@ fun CartelScreen4(navController: NavController) {
 }
 
 @Composable
-fun CartelScreen5(navController: NavController) {
+fun CartelScreen5() {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
-
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.release() // Detener la reproducción al salir de la pantalla
+        }
+    }
     val artistas = listOf(
         Artista(nombre = "LOLA ÍNDIGO", audioResId = R.raw.c4audio1),
         Artista(nombre = "NICKI NICOLE", audioResId = R.raw.c5audio2),
@@ -588,11 +559,15 @@ fun CartelScreen5(navController: NavController) {
 
 
 @Composable
-fun CartelScreen6(navController: NavController) {
+fun CartelScreen6() {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
-
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.release() // Detener la reproducción al salir de la pantalla
+        }
+    }
     val artistas = listOf(
         Artista(nombre = "DUKI", audioResId = R.raw.c2audio19),
         Artista(nombre = "BIZARRAP", audioResId = R.raw.audio1),
@@ -688,30 +663,6 @@ fun EventCard(
                 Button(onClick = onClick) {
                     Text(text = "Ver cartel")
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun EventCard1(name: String, price: String, location: String, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth(),
-        //elevation = 8.dp
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(text = name, style = MaterialTheme.typography.headlineLarge)
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(text = "Price: $price", style = MaterialTheme.typography.bodyLarge)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Location: $location", style = MaterialTheme.typography.bodyLarge)
-            Spacer(modifier = Modifier.height(20.dp))
-            Button(onClick = onClick) {
-                Text(text = "Ver cartel")
             }
         }
     }
