@@ -5,23 +5,16 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -35,6 +28,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.giglive_v2.ui.theme.Giglive_v2Theme
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 
 class MainActivity : ComponentActivity() {
 
@@ -49,29 +45,32 @@ class MainActivity : ComponentActivity() {
                         MainScreen(navController)
                     }
                     composable("cartel") {
-                        CartelScreen()
+                        CartelScreen(navController)
+                    }
+                    /*
+                    composable("cartel") {
+                        CartelScreen1(navController)
                     }
                     composable("cartel2") {
-                        CartelScreen2()
+                        CartelScreen(navController)
                     }
                     composable("cartel3") {
-                        CartelScreen3()
+                        CartelScreen(navController)
                     }
                     composable("cartel4") {
-                        CartelScreen4()
+                        CartelScreen(navController)
                     }
                     composable("cartel5") {
-                        CartelScreen5()
+                        CartelScreen(navController)
                     }
                     composable("cartel6") {
-                        CartelScreen6()
-                    }
+                        CartelScreen(navController)
+                    }*/
                 }
             }
         }
     }
 }
-
 
 
 
@@ -92,7 +91,7 @@ fun MainScreen(navController: NavController) {
                     price = "80€",
                     location = "Rivas Vaciamadrid",
                     imageResource = R.drawable.cartel,
-                    onClick = { navController.navigate("cartel") }
+                    onClick = { navController.navigate("cartel?index=0") }
                 )
             }
             item {
@@ -101,7 +100,7 @@ fun MainScreen(navController: NavController) {
                     price = "0€",
                     location = "Instagram",
                     imageResource = R.drawable.cartel2,
-                    onClick = { navController.navigate("cartel2") }
+                    onClick = { navController.navigate("cartel?index=1") }
                 )
             }
             item {
@@ -110,7 +109,7 @@ fun MainScreen(navController: NavController) {
                     price = "40€",
                     location = "Puerta de montilla",
                     imageResource = R.drawable.cartel3,
-                    onClick = { navController.navigate("cartel3") }
+                    onClick = { navController.navigate("cartel?index=2") }
                 )
             }
             item {
@@ -119,7 +118,7 @@ fun MainScreen(navController: NavController) {
                     price = "85€",
                     location = "Llanera",
                     imageResource = R.drawable.cartel4,
-                    onClick = { navController.navigate("cartel4") }
+                    onClick = { navController.navigate("cartel?index=3") }
                 )
             }
             item {
@@ -128,7 +127,7 @@ fun MainScreen(navController: NavController) {
                     price = "105€",
                     location = "Anexo Estadio Gran Canaria",
                     imageResource = R.drawable.cartel5,
-                    onClick = { navController.navigate("cartel5") }
+                    onClick = { navController.navigate("cartel?index=4") }
                 )
             }
             item {
@@ -137,15 +136,95 @@ fun MainScreen(navController: NavController) {
                     price = "78€",
                     location = "Málaga Forum.",
                     imageResource = R.drawable.cartel6,
-                    onClick = { navController.navigate("cartel6") }
+                    onClick = { navController.navigate("cartel?index=5") }
                 )
             }
         }
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun CartelScreen() {
+fun CartelScreen(navController: NavController) {
+    val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()
+
+    HorizontalPager(
+        count = 6, // Número de carteles
+        state = pagerState,
+        modifier = Modifier.fillMaxSize()
+    ) { page ->
+        when (page) {
+            0 -> CartelScreen1(navController)
+            1 -> CartelScreen2(navController)
+            2 -> CartelScreen3(navController)
+            3 -> CartelScreen4(navController)
+            4 -> CartelScreen5(navController)
+            5 -> CartelScreen6(navController)
+        }
+    }
+}
+
+@Composable
+fun CartelContent(navController: NavController, imageResId: Int, audioRange: IntRange) {
+    val context = LocalContext.current
+    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+    var artistaActivo by remember { mutableStateOf<Artista?>(null) }
+
+    val artistas = audioRange.map { audioResId ->
+        Artista(nombre = "Artista $audioResId", audioResId = audioResId)
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(id = imageResId),
+            contentDescription = null,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(artistas) { artista ->
+                val isPlaying = artista == artistaActivo
+                val textStyle = if (isPlaying) {
+                    MaterialTheme.typography.bodyMedium.copy(
+                        textDecoration = TextDecoration.Underline,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Magenta
+                    )
+                } else {
+                    MaterialTheme.typography.bodyMedium
+                }
+                Text(
+                    text = artista.nombre,
+                    style = textStyle.copy(fontSize = 20.sp),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            if (isPlaying) {
+                                mediaPlayer?.release() // Detener la música si está sonando
+                                mediaPlayer = null
+                                artistaActivo = null
+                            } else {
+                                mediaPlayer?.release() // Detener el audio actual si hay uno reproduciendo
+                                mediaPlayer = MediaPlayer.create(context, artista.audioResId)
+                                mediaPlayer?.start()
+                                mediaPlayer?.setOnCompletionListener {
+                                    mediaPlayer?.release()
+                                    mediaPlayer = null
+                                    artistaActivo = null
+                                }
+                                artistaActivo = artista
+                            }
+                        }
+                )
+            }
+        }
+    }
+}
+@Composable
+fun CartelScreen1(navController: NavController) {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
@@ -172,8 +251,12 @@ fun CartelScreen() {
         Artista(nombre = "DANI RIBBA", audioResId = R.raw.audio19),
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Image(
+    var offsetX by remember { mutableStateOf(0f) }
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+
+    ) {Image(
             painter = painterResource(id = R.drawable.cartel),
             contentDescription = null,
             modifier = Modifier.fillMaxWidth()
@@ -216,7 +299,7 @@ fun CartelScreen() {
 }
 
 @Composable
-fun CartelScreen2() {
+fun CartelScreen2(navController: NavController) {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
@@ -259,8 +342,12 @@ fun CartelScreen2() {
         Artista(nombre="MELENDI", audioResId = R.raw.c2audio33),
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Image(
+
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+
+    ) {Image(
             painter = painterResource(id = R.drawable.cartel2),
             contentDescription = null,
             modifier = Modifier.fillMaxWidth()
@@ -303,7 +390,7 @@ fun CartelScreen2() {
 }
 
 @Composable
-fun CartelScreen3() {
+fun CartelScreen3(navController: NavController) {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
@@ -332,8 +419,10 @@ fun CartelScreen3() {
         Artista(nombre = "LOQUILLO Y LOS TROGLODITAS", audioResId = R.raw.c3audio21),
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Image(
+    Column(
+        modifier = Modifier.fillMaxSize()
+
+    ) {Image(
             painter = painterResource(id = R.drawable.cartel3),
             contentDescription = null,
             modifier = Modifier.fillMaxWidth()
@@ -377,7 +466,7 @@ fun CartelScreen3() {
 
 
 @Composable
-fun CartelScreen4() {
+fun CartelScreen4(navController: NavController) {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
@@ -390,8 +479,11 @@ fun CartelScreen4() {
         Artista(nombre = "YANDEL", audioResId = R.raw.c4audio5),
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Image(
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+
+    ) {Image(
             painter = painterResource(id = R.drawable.cartel4),
             contentDescription = null,
             modifier = Modifier.fillMaxWidth()
@@ -434,7 +526,7 @@ fun CartelScreen4() {
 }
 
 @Composable
-fun CartelScreen5() {
+fun CartelScreen5(navController: NavController) {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
@@ -446,8 +538,12 @@ fun CartelScreen5() {
         Artista(nombre = "YANDEL", audioResId = R.raw.c4audio5),
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Image(
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+            // Permitir el desplazamiento vertical
+
+    ) {Image(
             painter = painterResource(id = R.drawable.cartel5),
             contentDescription = null,
             modifier = Modifier.fillMaxWidth()
@@ -490,8 +586,9 @@ fun CartelScreen5() {
 }
 
 
+
 @Composable
-fun CartelScreen6() {
+fun CartelScreen6(navController: NavController) {
     val context = LocalContext.current
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     var artistaActivo by remember { mutableStateOf<Artista?>(null) }
@@ -505,8 +602,11 @@ fun CartelScreen6() {
         Artista(nombre = "DUDI", audioResId = R.raw.audio14),
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Image(
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+
+    ) {Image(
             painter = painterResource(id = R.drawable.cartel6),
             contentDescription = null,
             modifier = Modifier.fillMaxWidth()
@@ -547,6 +647,7 @@ fun CartelScreen6() {
         }
     }
 }
+
 
 @Composable
 fun EventCard(
@@ -619,7 +720,6 @@ fun EventCard1(name: String, price: String, location: String, onClick: () -> Uni
 
 data class Artista(val nombre: String, val audioResId: Int)
 
-data class ClickableArea(val x: Int, val y: Int, val width: Int, val height: Int, val audioResId: Int)
 @Preview(showBackground = true)
 @Composable
 fun PreviewMainScreen() {
@@ -627,3 +727,5 @@ fun PreviewMainScreen() {
         MainScreen(navController = rememberNavController())
     }
 }
+
+
